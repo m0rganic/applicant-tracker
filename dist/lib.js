@@ -16,9 +16,12 @@
 
   var ApplicantDetailView = App.ApplicantDetailView = Backbone.View.extend({
 
+    id: "detail",
+    className: "detail-screen applicant-detail",
     template: App.getTemplate("applicant-detail"),
 
     events: {
+      "click"                : "captureClick",
       "click #back-to-list"  : "backToList"
     },
 
@@ -27,8 +30,32 @@
       return this;
     },
 
+    captureClick: function (e) {
+      e.stopPropagation();
+    },
+
     backToList: function () {
       App.router.navigate("/", {trigger: true});
+    },
+
+    show: function (cb) {
+      var _this = this;
+      setTimeout(function () {
+        _this.$el.addClass('active');
+        if (_.isFunction(cb)) {
+          _this.$el.one('transitionend webkitTransitionEnd', cb);
+        }
+      }, 0);
+    },
+
+    hide: function (cb) {
+      var _this = this;
+      setTimeout(function () {
+        _this.$el.removeClass('active');
+        if (_.isFunction(cb)) {
+          _this.$el.one('webkitTransitionEnd transitionend', cb);
+        }
+      }, 0);
     }
 
   });
@@ -46,6 +73,7 @@
 
   var ApplicantListItemView = App.ApplicantListItemView = Backbone.View.extend({
 
+    className: 'applicant',
     template: App.getTemplate("applicant-list-item"),
 
     events: {
@@ -57,8 +85,11 @@
       return this;
     },
 
-    showDetails: function () {
-      App.router.navigate("/applicants/" + this.model.id, {trigger: true});
+    showDetails: function (e) {
+      if (!App.detail) {
+        App.router.navigate("/applicants/" + this.model.id, {trigger: true});
+        e.stopPropagation();
+      }
     }
 
   });
@@ -77,6 +108,7 @@
 
   var ApplicantListView = App.ApplicantListView = Backbone.View.extend({
 
+    className: 'applicant-list',
     template: App.getTemplate("applicant-list"),
 
     render: function () {
@@ -102,11 +134,32 @@
    */
 
 
-  var ApplicantModel = App.ApplicantModel = Backbone.Model.extend({
+  var ApplicantModel = App.ApplicantModel = Kinvey.Backbone.Model.extend({
 
-    fetch: function (options) {
-      options.success(this);
-    }
+    urlRoot: 'applicants',
+
+    relations: [
+      {
+        type          : Backbone.One,
+        key           : 'github_profile',
+        relatedModel  : App.GithubProfileModel,
+        exclude       : true  // in this case, we don't want to try saving the github profile if the applicant changes
+      },
+      {
+        type            : Backbone.Many,
+        key             : 'repos',
+        relatedModel    : App.GithubRepoModel,
+        collectionType  : App.GithubReposCollection,
+        exclude         : true
+      },
+      {
+        type            : Backbone.Many,
+        key             : 'notes',
+        relatedModel    : App.NoteModel,
+        collectionType  : App.NotesCollection,
+        exclude         : false // we want to save notes to Kinvey any time the applicant is saved
+      }
+    ]
 
   });
 }());
@@ -119,25 +172,56 @@
    */
 
 
-  var ApplicantsCollection = App.ApplicantsCollection = Backbone.Collection.extend({
+  var ApplicantsCollection = App.ApplicantsCollection = Kinvey.Backbone.Collection.extend({
 
-    model: App.ApplicantModel,
+    url: 'applicants',
 
-    fetch: function (options) {
-      this.add([
-        {
-          id: 1,
-          name: "Ryan Kahn",
-          position: "HTML5 Game Developer"
-        },
-        {
-          id: 2,
-          name: "Shubhang Mani",
-          position: "DevOps Extraordinaire and Restauranteur"
-        }
-      ]);
-      options.success(this.models);
-    }
+    model: App.ApplicantModel
+
+  });
+}());
+(function () {
+  "use strict";
+  /*
+   * GithubProfileModel
+   * 
+   * A Backbone Model that represents a person's Github profile
+   */
+
+
+  var GithubProfileModel = App.GithubProfileModel = Kinvey.Backbone.Model.extend({
+
+    urlRoot: 'github-profiles'
+
+  });
+}());
+(function () {
+  "use strict";
+  /*
+   * GithubRepoModel
+   * 
+   * A Backbone Model that represents a Github repo
+   */
+
+
+  var GithubRepoModel = App.GithubRepoModel = Kinvey.Backbone.Model.extend({
+
+    urlRoot: 'github-repos'
+
+  });
+}());
+(function () {
+  "use strict";
+  /*
+   * GithubReposCollection
+   * 
+   * A Backbone Collection that represents a collection of Github repos
+   */
+
+
+  var GithubReposCollection = App.GithubReposCollection = Kinvey.Backbone.Collection.extend({
+
+    url: 'github-repos'
 
   });
 }());
@@ -179,6 +263,35 @@
 (function () {
   "use strict";
   /*
+   * NoteModel
+   * 
+   * A Backbone Model that represents a Github repo
+   */
+
+
+  var NoteModel = App.NoteModel = Kinvey.Backbone.Model.extend({
+
+    urlRoot: 'notes'
+
+  });
+}());
+(function () {
+  "use strict";
+  /*
+   * NotesCollection
+   * 
+   * A Backbone Collection that represents a collection of Github repos
+   */
+
+
+  var NotesCollection = App.NotesCollection = Kinvey.Backbone.Collection.extend({
+
+    url: 'notes'
+
+  });
+}());
+(function () {
+  /*
    * AppRouter
    *
    * Our applicant tracking application is fairly simple,
@@ -192,6 +305,15 @@
    * but larger apps might want finer controls over the rendering
    * and view-switching process.
    */
+
+
+
+  var hideDetailScreen = function () {
+    App.detail.hide(function () {
+      App.detail.remove();
+      App.detail = null;
+    });
+  };
 
    
   var AppRouter = App.AppRouter = Backbone.Router.extend({
@@ -208,17 +330,33 @@
      * and instantiates a new ApplicantsListView with that data
      */
     applicantsList: function () {
-      var applicants = App.applicants || new App.ApplicantsCollection();
-      App.applicants = applicants;
-      applicants.fetch({
-        success: function() {
+      if (App.main instanceof App.ApplicantListView) {
+        hideDetailScreen();
+        App.applicants.fetch();
+        console.log('reusing list');
+      } else {
+
+        var render = function (applicants) {
           var listView = new App.ApplicantListView({collection: applicants});
           $("#main").html(listView.render().el);
-        },
-        error: function() {
-          alert('Unable to retrieve applicant list');
+          App.main = listView;
+        };
+
+        if (App.applicants) {
+          App.applicants.fetch();
+          render(App.applicants);
+        } else {
+          App.applicants = new App.ApplicantsCollection();
+          App.applicants.fetch({
+            success: function() {
+              render(App.applicants);
+            },
+            error: function() {
+              alert('Unable to retrieve applicant list');
+            }
+          }); 
         }
-      });
+      }
     },
 
 
@@ -236,16 +374,38 @@
      * off to the newly created ApplicantDetailView for display
      */
     applicantDetail: function (id) {
-      var applicant = (App.applicants && App.applicants.get(id)) || new App.ApplicantModel({id: id});
-      applicant.fetch({
-        success: function () {
-          var detailView = new App.ApplicantDetailView({model: applicant});
-          $("#main").html(detailView.render().el);
-        },
-        error: function () {
-          alert("Unable to retrieve applicant details");
-        }
-      });
+      var render, applicant;
+
+      render = function (applicant) {
+        var p;
+        
+        App.detail = new App.ApplicantDetailView({model: applicant});
+
+        $("body").append(App.detail.render().el);
+        App.detail.show();
+
+        $(document).one('click', function () {
+          var scroll = document.body.scrollTop;
+          App.router.navigate("/", {trigger: true});
+          document.body.scrollTop = scroll;
+        });
+
+      };
+
+      if (App.applicants && App.applicants.get(id)) {
+        render(App.applicants.get(id));
+      } else {
+        this.applicantsList();
+        applicant = new App.ApplicantModel({_id: id});
+        applicant.fetch({
+          success: function () {
+            render(applicant);
+          },
+          error: function () {
+            alert("Unable to retrieve applicant details");
+          }
+        });
+      }
     }
 
   });

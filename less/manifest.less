@@ -1,0 +1,39 @@
+@import 'bootstrap';
+@import 'responsive';
+
+@import 'variable-overrides';
+
+@import 'applicant-list';
+@import 'applicant-detail';
+
+
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+body {
+  @media (max-width: @phoneMaxWidth) {
+    padding: 0;
+  }
+}
+
+.main-screen {
+}
+
+.detail-screen {
+  position: fixed;
+  left: 100%;
+  top: 0;
+  width: 90%;
+  height: 100%;
+  z-index: 20;
+  background: @bodyBackground;
+  .box-sizing(border-box);
+  .box-shadow(-2px 0px 8px fade(@black, 40));
+  .transition(all ease-in .1s);
+  &.active {
+    left: 10%;
+    .transition(all ease-in .1s);
+  }
+}

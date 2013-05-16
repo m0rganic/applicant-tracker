@@ -41,7 +41,10 @@ module.exports = function(grunt) {
           App: true,
           Backbone: true,
           $: true,
-          alert: true
+          alert: true,
+          console: true,
+          _: true,
+          Kinvey: true
         }
       },
       gruntfile: {
@@ -60,6 +63,10 @@ module.exports = function(grunt) {
       vendor: {
         src: 'vendor/**/*.js',
         dest: 'dist/'
+      },
+      img: {
+        src: 'img/**/*',
+        dest: 'dist/'
       }
     },
     watch: {
@@ -74,6 +81,10 @@ module.exports = function(grunt) {
       resources: {
         files: ['index.html', 'main.js'],
         tasks: ['copy:resources']
+      },
+      styles: {
+        files: 'less/**/*.less',
+        tasks: ['include_bootstrap']
       }
     },
     clean: {
@@ -86,6 +97,13 @@ module.exports = function(grunt) {
           base: './dist'
         }
       }
+    },
+    include_bootstrap: {
+      all: {
+        files: {
+          'dist/styles.css': 'less/manifest.less'
+        }
+      }
     }
   });
 
@@ -96,8 +114,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-include-bootstrap');
 
   // Default task.
-  grunt.registerTask('default', ['clean', 'jshint', 'concat', 'copy', 'connect', 'watch']);
+  grunt.registerTask('default', ['clean', 'jshint', 'concat', 'copy', 'include_bootstrap', 'connect', 'watch']);
 
 };

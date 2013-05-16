@@ -3,32 +3,47 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
 
   <title>Applicant Tracker</title>
 
-  <link rel="stylesheet" href="/app/styles/index.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-  <div id="main"></div>
+  <div id="main" class="main-screen"></div>
 
   
   <script type="text/html" id="applicant-detail-template">
-    <h1><%= name %></h1>
-    <p class="position"><%= position %></p>
-    <p class="description">A really cool dude</p>
+    <div class="headshot">
+      <img src="http://placehold.it/64x64">
+    </div>
+    <h1 class="name"><%= name %></h1>
+    <div class="position">
+      <span class="position-label">applying for</span>
+      <span class="label"><%= position %></span>
+    </div>
   </script>
   
 
   <script type="text/html" id="applicant-list-item-template">
-    <h3><%= name %></h3>
-    <p class="position"><%= position %></p>
+    <div class="headshot">
+      <img src="http://placehold.it/45x45">
+    </div>
+    <div class="body">
+      <h3 class="name"><%= name %></h3>
+      <div class="details">
+        <p><%= position %></p>
+      </div>
+    </div>
   </script>
   
 
   <script type="text/html" id="applicant-list-template">
-    <h1>Applicants</h1>
+    <div class="search input-append" data-scrolled>
+      <input id="search" type="text" placeholder="search">
+      <div class="btn btn-primary"><i class="icon-search icon-white"></i></div>
+    </div>
     <ul id="applicant-list">
 
     </ul>
@@ -40,14 +55,6 @@
   </script>
 
 
-  <script src="/vendor/jquery.js"></script>
-  <script src="/vendor/underscore.js"></script>
-  <script src="/vendor/backbone.js"></script>
-  <script src="/main.js"></script>
-  <script src="/lib.js"></script>
-  <script type="text/javascript">
-    App.router = new App.AppRouter()
-    Backbone.history.start()
-  </script>
+  <script data-main="lib/init" src="vendor/require.js"></script>
 </body>
 </html>
