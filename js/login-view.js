@@ -1,4 +1,4 @@
-require(['backbone', 'app'], function (Backbone, App) {
+define(['vendor/backbone', 'app'], function (Backbone, App) {
   "use strict";
   /*
    * LoginView
@@ -32,4 +32,4 @@ require(['backbone', 'app'], function (Backbone, App) {
     }
 
   });
-}());
+});

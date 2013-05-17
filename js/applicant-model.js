@@ -1,12 +1,13 @@
-require([
-  'kinvey', 
+define([
+  'vendor/backbone', 
+  'Kinvey', 
   'app',
   'github-profile-model',
   'github-repo-model',
   'github-repos-collection',
   'note-model',
   'notes-collection'
-], function (Kinvey, App, GithubProfileModel, GithubRepoModel, GithubReposCollection, NoteModel, NotesCollection) {
+], function (Backbone, Kinvey, App, GithubProfileModel, GithubRepoModel, GithubReposCollection, NoteModel, NotesCollection) {
   "use strict";
   /*
    * ApplicantModel

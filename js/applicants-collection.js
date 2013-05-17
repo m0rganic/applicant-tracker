@@ -1,4 +1,4 @@
-require(['kinvey', 'app', 'applicant-model'], function (Kinvey, App, ApplicantModel) {
+define(['Kinvey', 'app', 'applicant-model'], function (Kinvey, App, ApplicantModel) {
   "use strict";
   /*
    * ApplicantsCollection

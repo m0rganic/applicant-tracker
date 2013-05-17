@@ -209,7 +209,7 @@ body {
   font-size: 14px;
   line-height: 20px;
   color: #333333;
-  background-color: #ffffff;
+  background-color: #222222;
 }
 a {
   color: #0088cc;
@@ -2336,7 +2336,7 @@ table {
   border-top: 2px solid #dddddd;
 }
 .table .table {
-  background-color: #ffffff;
+  background-color: #222222;
 }
 .table-condensed th,
 .table-condensed td {
@@ -4168,7 +4168,7 @@ input[type="submit"].btn.btn-mini {
 .nav-tabs > .active > a:hover,
 .nav-tabs > .active > a:focus {
   color: #555555;
-  background-color: #ffffff;
+  background-color: #222222;
   border: 1px solid #ddd;
   border-bottom-color: transparent;
   cursor: default;
@@ -8042,6 +8042,22 @@ body {
     padding: 0;
   }
 }
+.main-screen {
+  -webkit-transition: all ease-in 0.2s;
+  -moz-transition: all ease-in 0.2s;
+  -o-transition: all ease-in 0.2s;
+  transition: all ease-in 0.2s;
+  background-color: #fff;
+}
+.main-screen.inactive {
+  -webkit-transition: all ease-out 0.2s;
+  -moz-transition: all ease-out 0.2s;
+  -o-transition: all ease-out 0.2s;
+  transition: all ease-out 0.2s;
+  -webkit-transform: scale(0.95);
+  -moz-transform: scale(0.95);
+  transform: scale(0.95);
+}
 .detail-screen {
   position: fixed;
   left: 100%;
@@ -8049,7 +8065,7 @@ body {
   width: 90%;
   height: 100%;
   z-index: 20;
-  background: #ffffff;
+  background: #222222;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;

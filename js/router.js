@@ -1,12 +1,13 @@
-require([
-  'backbone',
+define([
+  'jquery',
+  'vendor/backbone',
   'app',
   'applicant-list-view',
   'applicants-collection',
   'login-view',
   'applicant-detail-view',
   'applicant-model'
-], function (Backbone, App, ApplicantListView, ApplicantsCollection, LoginView, ApplicantDetailView, ApplicantModel) {
+], function ($, Backbone, App, ApplicantListView, ApplicantsCollection, LoginView, ApplicantDetailView, ApplicantModel) {
   
   /*
    * AppRouter
@@ -93,36 +94,27 @@ require([
     applicantDetail: function (id) {
       var render, applicant;
 
-      render = function (applicant) {
-        var p;
-        
-        App.detail = new ApplicantDetailView({model: applicant});
-
-        $("body").append(App.detail.render().el);
-        App.detail.show();
-
-        $(document).one('click', function () {
-          var scroll = document.body.scrollTop;
-          App.router.navigate("/", {trigger: true});
-          document.body.scrollTop = scroll;
-        });
-
-      };
-
-      if (App.applicants && App.applicants.get(id)) {
-        render(App.applicants.get(id));
-      } else {
+      if (!App.applicants) {
         this.applicantsList();
-        applicant = new ApplicantModel({_id: id});
-        applicant.fetch({
-          success: function () {
-            render(applicant);
-          },
-          error: function () {
-            alert("Unable to retrieve applicant details");
-          }
-        });
       }
+      applicant = App.applicants.get(id) || new ApplicantModel({_id: id});
+      applicant.fetch({
+        success: function () {
+          App.detail = new ApplicantDetailView({model: applicant});
+
+          $("body").append(App.detail.render().el);
+          App.detail.show();
+
+          $(document).one('click', function () {
+            var scroll = document.body.scrollTop;
+            App.router.navigate("/", {trigger: true});
+            document.body.scrollTop = scroll;
+          });
+        },
+        error: function () {
+          alert("Unable to retrieve applicant details");
+        }
+      });
     }
 
   });

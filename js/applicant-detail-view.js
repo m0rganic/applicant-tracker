@@ -1,4 +1,4 @@
-require(['kinvey', 'app'], function (Kinvey, App) {
+define(['vendor/underscore', 'vendor/backbone', 'app'], function (_, Backbone, App) {
   "use strict";
   /*
    * ApplicantDetailView
@@ -36,6 +36,7 @@ require(['kinvey', 'app'], function (Kinvey, App) {
       var _this = this;
       setTimeout(function () {
         _this.$el.addClass('active');
+        $("#main").addClass('inactive');
         if (_.isFunction(cb)) {
           _this.$el.one('transitionend webkitTransitionEnd', cb);
         }
@@ -46,6 +47,7 @@ require(['kinvey', 'app'], function (Kinvey, App) {
       var _this = this;
       setTimeout(function () {
         _this.$el.removeClass('active');
+        $("#main").removeClass('inactive');
         if (_.isFunction(cb)) {
           _this.$el.one('webkitTransitionEnd transitionend', cb);
         }

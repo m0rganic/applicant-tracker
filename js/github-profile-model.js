@@ -1,4 +1,4 @@
-require(['kinvey', 'app'], function (Kinvey, App) {
+define(['Kinvey', 'app'], function (Kinvey, App) {
   "use strict";
   /*
    * GithubProfileModel

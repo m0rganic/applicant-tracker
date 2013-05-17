@@ -19,6 +19,14 @@ body {
 }
 
 .main-screen {
+  .transition(all ease-in .2s);
+  background-color: #fff;
+  &.inactive {
+    .transition(all ease-out .2s);
+    -webkit-transform: scale(.95);
+    -moz-transform: scale(.95);
+    transform: scale(.95);
+  }
 }
 
 .detail-screen {

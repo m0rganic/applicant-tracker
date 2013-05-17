@@ -1,4 +1,33 @@
-require(['backbone', 'app', 'router'], function (Backbone, App, AppRouter) {
+requirejs.config({
+  shim: {
+    'vendor/backbone': {
+      deps: ['vendor/underscore', 'jquery'],
+      exports: 'Backbone'
+    },
+    'vendor/underscore': {
+      exports: '_'
+    },
+    'vendor/backbone-associations': [ "vendor/backbone" ],
+    'Kinvey': [ 'vendor/jquery', 'vendor/underscore', 'vendor/backbone' ]
+  },
+  paths: {
+    jquery: [
+      "http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
+      "vendor/jquery"
+    ],
+    'Kinvey': 'vendor/kinvey'
+  }
+});
+
+require([
+  'jquery',
+  'vendor/underscore',
+  'vendor/backbone', 
+  'vendor/backbone-associations',
+  'Kinvey',
+  'app', 
+  'router'
+], function ($, _, Backbone, Associations, Kinvey, App, AppRouter) {
 
 
 
@@ -16,11 +45,11 @@ require(['backbone', 'app', 'router'], function (Backbone, App, AppRouter) {
   });
 
   // add layering styles when we scroll to any elements tagged with the data-scrolled attr
-  var scrolled = false
-    , checkScrolled;
+  var scrolled = false, 
+      checkScrolled;
 
   checkScrolled = function () {
-    var position = $(document).scrollTop()
+    var position = $(document).scrollTop();
     if (position <= 1 && scrolled) {
       $(".scrolled").removeClass('scrolled');
       scrolled = false;
@@ -29,7 +58,7 @@ require(['backbone', 'app', 'router'], function (Backbone, App, AppRouter) {
       $("[data-scrolled]").addClass('scrolled');
       scrolled = true;
     }
-  }
+  };
 
   $(document).on('scroll', checkScrolled);
   $(document).on('touchmove', checkScrolled);
@@ -42,11 +71,11 @@ require(['backbone', 'app', 'router'], function (Backbone, App, AppRouter) {
    * Start the connection with Kinvey, and use our app key and secret to authenticate
    */
 
-  KINVEY_DEBUG = true;
+  window.KINVEY_DEBUG = true;
   Kinvey.init({
-  appKey: "kid_TTJG8OTzcJ",
-  appSecret: "45488ab2f3304fee991ce0c1ab716804",
-  })
+    appKey: "kid_VPw-HIphLf",
+    appSecret: "b5bf32a8061c40bab22f90c0d37f48c2"
+  });
   
 
 
@@ -57,7 +86,7 @@ require(['backbone', 'app', 'router'], function (Backbone, App, AppRouter) {
    * by starting the Backbone history.
    */
 
-  App.router = new AppRouter()
-  Backbone.history.start()
+  App.router = new AppRouter();
+  Backbone.history.start();
 
 });

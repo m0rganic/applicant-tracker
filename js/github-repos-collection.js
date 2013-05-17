@@ -1,7 +1,7 @@
-require(['kinvey', 'app'], function (Kinvey, App) {
+define(['Kinvey', 'app'], function (Kinvey, App) {
   "use strict";
   /*
-   * NotesCollection
+   * GithubReposCollection
    * 
    * A Backbone Collection that represents a collection of Github repos
    */
@@ -9,7 +9,7 @@ require(['kinvey', 'app'], function (Kinvey, App) {
 
   return Kinvey.Backbone.Collection.extend({
 
-    url: 'notes'
+    url: 'github-repos'
 
   });
 });

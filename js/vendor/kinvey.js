@@ -105,7 +105,7 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
      * @type {string}
      * @default
      */
-    Kinvey.API_ENDPOINT = 'https://v3yk1n.kinvey.com';
+    Kinvey.API_ENDPOINT = 'https://baas.kinvey.com';
 
     /**
      * The Kinvey API version used when communicating with
@@ -304,6 +304,9 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
 
       // Cast arguments.
       options = options || {};
+
+      // The top-level ping is not compatible with `options.nocache`.
+      options.nocache = null == Kinvey.appKey ? false : options.nocache;
 
       // Prepare the response. If the library copy has not been initialized yet,
       // ping anonymously.
@@ -671,6 +674,7 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
 
     // Define the `Storage` namespace, used to store application state.
     /**
+     * @private
      * @namespace Storage
      */
     var Storage = {
@@ -1471,17 +1475,25 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
     /**
      * Counts all elements in the group.
      *
+     * @param {string} [field] The field, or `null` to perform a global count.
      * @returns {Kinvey.Group} The aggregation.
      */
-    Kinvey.Group.count = function() {
-      var aggregation = new Kinvey.Group();
-      aggregation.initial({
+    Kinvey.Group.count = function(field) {
+      // Return the aggregation.
+      var agg = new Kinvey.Group();
+
+      // If a field was specified, count per field.
+      if(null != field) {
+        agg.by(field);
+      }
+
+      agg.initial({
         result: 0
       });
-      aggregation.reduce(function(doc, out) {
+      agg.reduce(function(doc, out) {
         out.result += 1;
       });
-      return aggregation;
+      return agg;
     };
 
     /**
@@ -2258,6 +2270,18 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
       },
 
       /**
+       * Returns the email verification status.
+       *
+       * @returns {?Object} The email verification status, or `null` if not set.
+       */
+      getEmailVerification: function() {
+        if(null != this._document._kmd && null != this._document._kmd.emailVerification) {
+          return this._document._kmd.emailVerification.status;
+        }
+        return null;
+      },
+
+      /**
        * Returns the date when the entity was last modified.
        *
        * @returns {?Date} Last modified date, or `null` if not set.
@@ -2490,12 +2514,6 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
           var index = '' === relation ? 0 : relation.split('.').length;
           properties[index] = (properties[index] || []).concat(relation);
         });
-
-        // If there is no active user prior to saving, saving documents in parallel
-        // can introduce an edge-case where multiple implicit users are being
-        // created. To avoid this, save the first document serially.
-        var length = properties.length;
-        properties[length] = [properties[length - 1].shift()];
 
         // Prepare the response.
         var documents = {}; // Partial responses.
@@ -5101,11 +5119,10 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
           var resolve = Object.keys(options.relations).filter(function(member) {
             return -1 === options.exclude.indexOf(member);
           });
-          if(0 !== resolve.length) { // Add flags.
-            request.flags = request.flags || {};
-            request.flags.retainReferences = false;
-            request.flags.resolve = resolve.join(',');
-          }
+
+          request.flags = request.flags || {};
+          request.flags.retainReferences = false;
+          request.flags.resolve = resolve.join(',');
         }
 
         // Initiate the network request.
@@ -5841,6 +5858,7 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
        *
        * @param {Object}  [options]              Options.
        * @param {boolean} [options.enable=false] Enable local persistence.
+       * @param {boolean} [options.online]       The initial application state.
        * @returns {Promise} The promise.
        */
       init: function(options) {
@@ -5849,8 +5867,12 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
           log('Initializing the synchronization functionality.', arguments);
         }
 
+        // Cast arguments.
+        options = options || {};
+
         // Save applicable options.
         Sync.enabled = null != options ? options.enable : false;
+        Sync.online = 'undefined' !== typeof options.online ? options.online : Sync.online;
 
         // Resolve immediately.
         return Kinvey.Defer.resolve(null);
@@ -5934,6 +5956,30 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
           return Kinvey.Sync.execute(options);
         }
         return Kinvey.Defer.resolve(null);
+      },
+
+      /**
+       * Prefers the local document over the net document.
+       *
+       * @param {string} collection The collection.
+       * @param {?Object} local The local document.
+       * @param {?Object} net The net document.
+       * @returns {Promise} The winning document.
+       */
+      clientAlwaysWins: function(collection, local) {
+        return Kinvey.Defer.resolve(local);
+      },
+
+      /**
+       * Prefers the net document over the local document.
+       *
+       * @param {string} collection The collection.
+       * @param {?Object} local The local document.
+       * @param {?Object} net The net document.
+       * @returns {Promise} The winning document.
+       */
+      serverAlwaysWins: function(collection, local, net) {
+        return Kinvey.Defer.resolve(net);
       }
     };
 
@@ -7026,9 +7072,13 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
 
     // Extend the mixin with the metadata functionality.
     _.extend(Kinvey.Backbone.ModelMixin, {
+      // The email verification metadata method is added in
+      // `Kinvey.Backbone.UserMixin`.
+
       /**
        * The models’ metadata.
        *
+       * @private
        * @property {Kinvey.Metadata}
        */
       _metadata: null,
@@ -7089,7 +7139,6 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
      * @namespace
      */
     Kinvey.Backbone.UserMixin = _.extend({}, Kinvey.Backbone.ModelMixin, UserMixin, {
-
       /**
        * Links a social identity to the user.
        *
@@ -7123,6 +7172,13 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
         var promise = Kinvey.Social.disconnect(this.attributes, provider, options);
         return kinveyToBackbonePromise(promise, options);
       },
+
+      /**
+       * Returns the email verification status.
+       *
+       * @returns {?Object} The email verification status, or `null` if not set.
+       */
+      getEmailVerification: backboneWrapMetadata(Kinvey.Metadata.prototype.getEmailVerification),
 
       /**
        * Returns whether the user is logged in.
@@ -7243,12 +7299,12 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
        * @returns {Promise} The response, status, and xhr objects.
        */
       forgotUsername: function(email, options) {
-        // Cast araguments.
+        // Cast arguments.
         options = options || {};
 
         // Return the response.
         var promise = Kinvey.User.forgotUsername(email, options);
-        return kinveyToBackbonePromise(promise);
+        return kinveyToBackbonePromise(promise, options);
       },
 
       /**
@@ -7264,7 +7320,7 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
 
         // Return the response.
         var promise = Kinvey.User.resetPassword(username, options);
-        return kinveyToBackbonePromise(promise);
+        return kinveyToBackbonePromise(promise, options);
       },
 
       /**
@@ -7280,7 +7336,7 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
 
         // Return the response.
         var promise = Kinvey.User.exists(username, options);
-        return kinveyToBackbonePromise(promise);
+        return kinveyToBackbonePromise(promise, options);
       },
 
       /**
@@ -7296,7 +7352,7 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
 
         // Return the response.
         var promise = Kinvey.User.restore(id, options);
-        return kinveyToBackbonePromise(promise);
+        return kinveyToBackbonePromise(promise, options);
       }
     };
 
@@ -7316,16 +7372,19 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
     /**
      * Returns an object containing all (nested) relations of the specified model.
      *
+     * @param {string} mode The mode, read or write.
      * @param {Backbone.Model} model The model.
-     * @param {string} [prefix] The relation key prefix.
-     * @param {Array} [stack] Stack of already resolved relations. Used to avoid
-     *          infinite recursion.
+     * @throws {Kinvey.Error} collection or relatedModel must be set on the
+     *           relation.
      * @returns {Object} The relations to in- and exclude.
      */
-    var backboneRelations = function(model) {
+    var backboneRelations = function(mode, model) {
       // Prepare the response.
       var exclude = [];
       var relations = {};
+
+      // The exclude property to check.
+      var prop = 'read' === mode ? 'autoFetch' : 'autoSave';
 
       // Helper function to add relations to the stack.
       var stack = [];
@@ -7362,6 +7421,9 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
 
         // Obtain, validate, and cast the collection.
         var collection = relation.collection || _.result(relatedModel, 'url');
+        if(null == collection) {
+          throw new Kinvey.Error('collection or relatedModel must be set on the relation.');
+        }
         if(0 === collection.indexOf('/')) { // Strip the leading slash (if any).
           collection = collection.substr(1);
         }
@@ -7369,12 +7431,12 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
         // Add the relation.
         var key = null !== prefix ? prefix + '.' + relation.key : relation.key;
         relations[key] = collection;
-        if(relation.exclude) {
+        if(false === relation[prop]) {
           exclude.push(key);
         }
 
         // Add any nested relations to the stack.
-        if(!relation.exclude && null != relatedModel && !isEmpty(relatedModel.relations)) {
+        if(false !== relation[prop] && null != relatedModel && !isEmpty(relatedModel.relations)) {
           addToStack(relatedModel.relations, depth + 1, key);
         }
       }
@@ -7478,7 +7540,8 @@ module.exports=h:"undefined"!=typeof window&&(window.sift=h)})();
       // Add support for references for both collections and models.
       var relations = this.model ? this.model.prototype.relations : this.relations;
       if(!isEmpty(relations)) {
-        relations = backboneRelations(this.model ? this.model.prototype : this);
+        var mode = 'read' === method ? 'read' : 'write';
+        relations = backboneRelations(mode, this.model ? this.model.prototype : this);
         options.exclude = relations.exclude;
         options.relations = relations.relations;
       }

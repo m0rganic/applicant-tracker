@@ -1,4 +1,4 @@
-require(['kinvey', 'app', 'applicant-list-item-view'], function (Kinvey, App, ApplicantListItemView) {
+define(['vendor/backbone', 'app', 'applicant-list-item-view'], function (Backbone, App, ApplicantListItemView) {
   "use strict";
   /*
    * ApplicantListView

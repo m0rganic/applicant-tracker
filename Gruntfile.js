@@ -36,22 +36,19 @@ module.exports = function(grunt) {
         boss: true,
         eqnull: true,
         browser: true,
+        passfail: true,
+        devel: true,
         globals: {
-          jQuery: true,
-          App: true,
-          Backbone: true,
-          $: true,
-          alert: true,
-          console: true,
-          _: true,
-          Kinvey: true
+          define: true,
+          require: true,
+          requirejs: true
         }
       },
       gruntfile: {
         src: 'Gruntfile.js'
       },
-      lib: {
-        src: 'lib/**/*.js'
+      js: {
+        src: ['js/**/*.js', '!js/vendor/**/*.js']
       }
     },
     copy: {
@@ -60,8 +57,8 @@ module.exports = function(grunt) {
           "dist/": [ "./index.html", "./main.js" ]
         }
       },
-      vendor: {
-        src: 'vendor/**/*.js',
+      js: {
+        src: 'js/**/*.js',
         dest: 'dist/'
       },
       img: {
@@ -74,9 +71,9 @@ module.exports = function(grunt) {
         files: '<%= jshint.gruntfile.src %>',
         tasks: ['jshint:gruntfile']
       },
-      lib: {
-        files: '<%= jshint.lib.src %>',
-        tasks: ['jshint:lib', 'concat:lib']
+      js: {
+        files: '<%= jshint.js.src %>',
+        tasks: ['jshint:js', 'copy:js']
       },
       resources: {
         files: ['index.html', 'main.js'],
@@ -117,6 +114,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-include-bootstrap');
 
   // Default task.
-  grunt.registerTask('default', ['clean', 'jshint', 'concat', 'copy', 'include_bootstrap', 'connect', 'watch']);
+  grunt.registerTask('default', ['clean', 'jshint', 'copy', 'include_bootstrap', 'connect', 'watch']);
 
 };
