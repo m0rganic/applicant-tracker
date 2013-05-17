@@ -1,4 +1,4 @@
-define(['vendor/underscore', 'vendor/backbone', 'app'], function (_, Backbone, App) {
+define(['jquery', 'vendor/underscore', 'vendor/backbone', 'app'], function ($, _, Backbone, App) {
   "use strict";
   /*
    * ApplicantDetailView
@@ -11,7 +11,7 @@ define(['vendor/underscore', 'vendor/backbone', 'app'], function (_, Backbone, A
   return Backbone.View.extend({
 
     id: "detail",
-    className: "detail-screen applicant-detail",
+    className: "screen applicant-detail",
     template: App.getTemplate("applicant-detail"),
 
     events: {
@@ -21,6 +21,7 @@ define(['vendor/underscore', 'vendor/backbone', 'app'], function (_, Backbone, A
 
     render: function () {
       this.$el.html(this.template(this.model.attributes));
+      this.show();
       return this;
     },
 
@@ -35,8 +36,9 @@ define(['vendor/underscore', 'vendor/backbone', 'app'], function (_, Backbone, A
     show: function (cb) {
       var _this = this;
       setTimeout(function () {
-        _this.$el.addClass('active');
-        $("#main").addClass('inactive');
+        _this.$el.addClass('in');
+        var p = $("body").scrollTop();
+        $("#main").addClass('drop').css('top', -p).data('p', p);
         if (_.isFunction(cb)) {
           _this.$el.one('transitionend webkitTransitionEnd', cb);
         }
@@ -46,12 +48,21 @@ define(['vendor/underscore', 'vendor/backbone', 'app'], function (_, Backbone, A
     hide: function (cb) {
       var _this = this;
       setTimeout(function () {
-        _this.$el.removeClass('active');
-        $("#main").removeClass('inactive');
+        _this.$el.removeClass('in');
+        $("#main").removeClass('drop').css('top', 'auto');
+        $("body").scrollTop($("#main").data('p'));
         if (_.isFunction(cb)) {
-          _this.$el.one('webkitTransitionEnd transitionend', cb);
+          _this.$el.one('transitionend webkitTransitionEnd', cb);
         }
       }, 0);
+    },
+
+    remove: function () {
+      var _this = this;
+      this.hide(function () {
+        Backbone.View.prototype.remove.apply(_this);
+        App.detail = null;
+      });
     }
 
   });

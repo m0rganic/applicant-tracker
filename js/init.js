@@ -43,25 +43,6 @@ require([
       window.scrollTo(0,1);
     }, 0);
   });
-
-  // add layering styles when we scroll to any elements tagged with the data-scrolled attr
-  var scrolled = false, 
-      checkScrolled;
-
-  checkScrolled = function () {
-    var position = $(document).scrollTop();
-    if (position <= 1 && scrolled) {
-      $(".scrolled").removeClass('scrolled');
-      scrolled = false;
-    }
-    if (position > 1 && !scrolled) {
-      $("[data-scrolled]").addClass('scrolled');
-      scrolled = true;
-    }
-  };
-
-  $(document).on('scroll', checkScrolled);
-  $(document).on('touchmove', checkScrolled);
   
 
 

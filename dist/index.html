@@ -11,8 +11,15 @@
 </head>
 
 <body>
-  <div id="main" class="main-screen"></div>
+  <div id="main" class="in screen"></div>
 
+
+  <script type="text/html" id="overlay-template">
+    <h2><%= title %></h2>
+    <% if (icon) { %>
+      <div class="<%= icon %>"></div>
+    <% } %>
+  </script>
   
   <script type="text/html" id="applicant-detail-template">
     <div class="headshot">
@@ -32,10 +39,15 @@
     </div>
     <div class="body">
       <h3 class="name"><%= name %></h3>
-      <div class="details">
-        <p><%= position %></p>
-      </div>
     </div>
+  </script>
+  
+
+  <script type="text/html" id="applicant-list-group-template">
+    <ul class="group">
+      <li class="group-header"><%= position %></li>
+      <!-- applicants will get inserted here -->
+    </ul>
   </script>
   
 
@@ -44,9 +56,9 @@
       <input id="search" type="text" placeholder="search">
       <div class="btn btn-primary"><i class="icon-search icon-white"></i></div>
     </div>
-    <ul id="applicant-list">
-
-    </ul>
+    <div id="applicant-list" class="groups">
+      <!-- applicant groups will insert here -->
+    </div>
   </script>
   
 

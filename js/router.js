@@ -6,8 +6,9 @@ define([
   'applicants-collection',
   'login-view',
   'applicant-detail-view',
-  'applicant-model'
-], function ($, Backbone, App, ApplicantListView, ApplicantsCollection, LoginView, ApplicantDetailView, ApplicantModel) {
+  'applicant-model',
+  'overlay-view'
+], function ($, Backbone, App, ApplicantListView, ApplicantsCollection, LoginView, ApplicantDetailView, ApplicantModel, OverlayView) {
   
   /*
    * AppRouter
@@ -26,13 +27,6 @@ define([
 
 
 
-  var hideDetailScreen = function () {
-    App.detail.hide(function () {
-      App.detail.remove();
-      App.detail = null;
-    });
-  };
-
    
   return Backbone.Router.extend({
 
@@ -48,32 +42,76 @@ define([
      * and instantiates a new ApplicantsListView with that data
      */
     applicantsList: function () {
+
+      // If the user views an applicant and then hits back, we will
+      // already have the list populated and ready, so fetch in the
+      // background, but show what's in the DOM immediately
       if (App.main instanceof ApplicantListView) {
-        hideDetailScreen();
+        
+        App.detail.remove();
         App.applicants.fetch();
-        console.log('reusing list');
+
+      // Otherwise, we don't have the list ready to go, so build it
+      // out for the first time
       } else {
+        var overlay, overlayTimeout;
 
-        var render = function (applicants) {
-          var listView = new ApplicantListView({collection: applicants});
-          $("#main").html(listView.render().el);
-          App.main = listView;
-        };
+        // Create our Kinvey backed collection of applicants, and store
+        // it on the App global so we can reuse the data later on.
+        App.applicants = new ApplicantsCollection();
 
-        if (App.applicants) {
-          App.applicants.fetch();
-          render(App.applicants);
-        } else {
-          App.applicants = new ApplicantsCollection();
-          App.applicants.fetch({
-            success: function() {
-              render(App.applicants);
-            },
-            error: function() {
-              alert('Unable to retrieve applicant list');
+        // If the loading takes a while over the slower mobile connection,
+        // we'll show a "loading" overlay screen. But if it's a fast
+        // connection, we don't want it flickering on with every click. So
+        // we set it on a timer, which we can clear later if the data returns
+        // fast enough.
+        overlayTimeout = setTimeout(function () {
+          overlay = new OverlayView({
+            title: 'Loading ...',
+            icon: 'loading'
+          });
+        }, 200);
+
+        // Fetch the data from Kinvey
+        App.applicants.fetch({
+
+          success: function() {
+
+            // `overlay` will be defined if the overlayTimeout fired, meaning
+            // the request is took longer. Now that it is complete, we need to
+            // remove the overlay view.
+            if (overlay) {
+              overlay.remove();
+            // `overlay` isn't defined, which means the request completed in less
+            // than the overlayTimeout length. Clear the timeout to make sure 
+            // we don't show the overlay after everything is done!
+            } else {
+              clearTimeout(overlayTimeout);
             }
-          }); 
-        }
+
+            // Create a list view based on the applicants collection, which now
+            // has data from Kinvey
+            var listView = new ApplicantListView({collection: App.applicants});
+
+            // Insert it into the main screen container
+            $("#main").html(listView.render().el);
+
+            // Store it for later use
+            App.main = listView;
+
+          },
+
+          error: function() {
+            // Same as above
+            if (overlay) {
+              overlay.remove();
+            } else {
+              clearTimeout(overlayTimeout);
+            }
+            // Ideally there would be some better error handling than an alert :)
+            alert('Unable to retrieve applicant list');
+          }
+        }); 
       }
     },
 
@@ -92,26 +130,62 @@ define([
      * off to the newly created ApplicantDetailView for display
      */
     applicantDetail: function (id) {
-      var render, applicant;
+      var render, applicant, overlay, overlayTimeout;
 
+      // If `App.applicants` is not defined, it means the user directly
+      // loaded (or refreshed) this URL. So run the `applicantsList` route
+      // first to build the list in the background. Even though it makes
+      // async data requests, we don't need the data to render this view
+      // now (we just want the list to exist in the background), so we 
+      // continue on immediately.
       if (!App.applicants) {
         this.applicantsList();
       }
-      applicant = App.applicants.get(id) || new ApplicantModel({_id: id});
+
+      // Create a new applicant model. We've setup some business logic on
+      // our Kinvey backend to append Github profile data to an applicant's
+      // record whenever that record is retrieved individually. This lets
+      // us keep the list view snappy (rather than waiting for a Github API
+      // request to return for each applicant in the list), and avoids
+      // pounding the API and hitting the rate limit. We don't need the Github
+      // data to display the list view anyway.
+      applicant = new ApplicantModel({_id: id});
+
+      // Show an overlay if the loading takes too long. See the `applicantsList`
+      // route handler for a more detailed explanation
+      overlayTimeout = setTimeout(function () {
+        overlay = new OverlayView({
+          title: 'Loading ...',
+          icon: 'loading'
+        });
+      }, 200);
+
+      // Fetch the applicant data (along with Github profile) from Kinvey
       applicant.fetch({
+
         success: function () {
+
+          // Remove the overlay
+          if (overlay) {
+            overlay.remove();
+          } else {
+            clearTimeout(overlayTimeout);
+          }
+
+          // Create the detail view based on our applicant model
           App.detail = new ApplicantDetailView({model: applicant});
 
+          // Add it to the <body> element
           $("body").append(App.detail.render().el);
-          App.detail.show();
 
-          $(document).one('click', function () {
-            var scroll = document.body.scrollTop;
-            App.router.navigate("/", {trigger: true});
-            document.body.scrollTop = scroll;
-          });
         },
+
         error: function () {
+          if (overlay) {
+            overlay.remove();
+          } else {
+            clearTimeout(overlayTimeout);
+          }
           alert("Unable to retrieve applicant details");
         }
       });
