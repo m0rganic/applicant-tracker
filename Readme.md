@@ -5,19 +5,22 @@ Applicant Tracker is a sample application that you with a working example of a B
 After downloading or cloning the repository:
 
 * Replace `App Key` and `App Secret` (in `js/init.js`) with your application's credentials.
-* Add a user to your Kinvey backend through the [web console](https://console.kinvey.com/addons/users/new)
-* Create an `applicants` collection and import `backend/applicants.json` for some sample data to get started with.
+* Add a user to your Kinvey backend through the [web console](https://console.kinvey.com/addons/users/new), and set the permissions for users to "Read Only" (under the [Settings](https://console.kinvey.com/addons/users/settings) page).
+* Create an `applicants` collection and import `backend/applicants.json` for some sample data to get started with. Make sure to set the permissions to "Full" for this collection as well.
 * Copy the contents of `backend/applicants-post-fetch.js` into the post-fetch [custom code](https://console.kinvey.com/addons/business-logic/applicants) for the `applicants` collection, making sure to add your Github API keys to the top of the file.
 * Install the Grunt dependencies:
-```bash
+
+```
 npm install
 ```
+
 * Run the local development environment with Grunt (launches a local server and watches for changes)
-```bash
+
+```
 grunt
 ```
 
-Check it out in action at http://localhost:3000
+Check it out in action at [http://localhost:3000](http://localhost:3000)
 
 ## Functionality
 This application demonstrates:
