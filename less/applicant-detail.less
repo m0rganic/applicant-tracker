@@ -1,32 +1,114 @@
 .applicant-detail {
 
-  .headshot {
-    margin-left: -20px;
-    margin-top: 20px;
-    float: left;
-    border: 4px solid fade(@black, 60);
-    .border-radius(4px);
-    margin-right: 10px;
-  }
+  .header {
+    .headshot {
+      margin-left: 20px;
+      margin-top: 20px;
+      margin-right: 10px;
+      float: left;
+      .box-shadow(0px 0px 20px fade(@black, 30));
+      .img-circle();
+      img {
+        .img-circle();
+      }
+    }
 
-  .position {
-    .position-label {
-      .muted;
-      font-style: italic;
-      font-size: @fontSizeSmall;
-      display: block;
+    .position {
+      text-align: right;
+      margin-right: 20px;
+    }
+
+    .name {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 24px;
+      line-height: 32px;
+      margin-right: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0;
+      font-weight: bold;
     }
   }
 
-  .name {
+  .section-header {
+    font-size: @fontSizeLarge;
+    font-weight: 800;
+    margin-left: 20px;
+  }
+
+  .stat {
+    display: inline-block;
+    text-align: center;
+    font-size: 1.5 * @fontSizeLarge;
+    font-weight: 200;
+    margin: 5px;
+    text-transform: lowercase;
+    .border-radius(@borderRadiusLarge);
+    border: 1px solid #ccc;
+    padding: 10px 10px 5px 10px;
+    &::after {
+      content: attr(data-stat);
+      display: block;
+      font-size: @fontSizeMini;
+    }
+  }
+
+
+  .profile-metrics {
+    text-align: center;
     margin-top: 20px;
-    font-size: 24px;
-    line-height: 24px;
-    margin-right: 10px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 0;
-    font-weight: bold;
+  }
+
+  .field.link {
+    a {
+      .btn;
+      .btn-info;
+      .btn-large;
+      display: block;
+      margin: 10px 20px;
+    }
+  }
+
+  .repo {
+    .clearfix;
+    margin: 60px 20px 20px;
+    text-align: center;
+    .name {
+      font-size: 1.5 * @fontSizeLarge;
+      line-height: 1.25em;
+    }
+    .description {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    .metrics {
+      text-align: center;
+      .stat {
+        margin-top: 0px;
+        &.language {
+          font-size: @fontSizeLarge;
+        }
+      }
+    }
+  }
+
+  .no-github {
+    padding: 20px;
+    margin: 40px;
+    background-color: #444;
+    .border-radius(@borderRadiusLarge);
+    h2 {
+      font-size: @fontSizeLarge;
+      line-height: 1.2 * @baseLineHeight;
+      text-align: center;
+      color: #888;
+      font-weight: 800;
+    }
+    p {
+      color: #eee;
+      text-align: center;
+    }
   }
 
 }

@@ -3,7 +3,8 @@ define(['Kinvey', 'app'], function (Kinvey, App) {
   /*
    * NoteModel
    * 
-   * A Backbone Model that represents a Github repo
+   * A Backbone Model that represents a single note
+   * about an applicant
    */
 
 

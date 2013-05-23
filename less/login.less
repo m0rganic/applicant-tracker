@@ -1,0 +1,37 @@
+#login {
+  .logo {
+    text-align: center;
+  }
+  form {
+    margin: 20px;
+    #email, #password {
+      font-size: 1.5 * @fontSizeLarge;
+      line-height: 1.5em;
+      display: block;
+      margin: 0;
+      padding: 0 10px;
+      height: (1.5 * 1.5 * @fontSizeLarge) + 20px;
+      .box-sizing(border-box);
+      width: 100%;
+      .box-shadow(none);
+    }
+
+    #email {
+      .border-radius(4px 4px 0 0);
+    }
+    #password {
+      border-top: none;
+      .border-radius(0);
+    }
+    .btn {
+      .border-radius(0 0 4px 4px);
+      display: block;
+      height: (1.5 * 1.5 * @fontSizeLarge) + 20;
+      font-size: 1.5 * @fontSizeLarge;
+      font-weight: 800;
+      line-height: 1.5em;
+      width: 100%;
+    }
+
+  }
+}

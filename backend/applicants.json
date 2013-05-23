@@ -1,0 +1,60 @@
+[
+  {
+    "name": "Joe Chernov",
+    "position": "Marketer, Bearded Fellow"
+  },
+  {
+    "name": "Shubhang Mani",
+    "position": "DevOps Extraordinaire",
+    "github": "bhang"
+  },
+  {
+    "name": "Mike Katz",
+    "position": "iOS Wizard",
+    "github": "mikekatz"
+  },
+  {
+    "name": "Gal Niv",
+    "position": "Nodetacular",
+    "github": "galniv"
+  },
+  {
+    "name": "Ryan Kahn",
+    "position": "HTML5 Game Developer",
+    "github": "Myztiq"
+  },
+  {
+    "name": "Sravish Sridhar",
+    "position": "Vision quester",
+    "github": "sravish"
+  },
+  {
+    "name": "Caroline Murphy",
+    "position": "Content Master"
+  },
+  {
+    "name": "Ivan Stoyanov",
+    "position": "Nodetacular"
+  },
+  {
+    "name": "Jake McKibben",
+    "position": "Pixel pusher"
+  },
+  {
+    "name": "Lauren Pedigo",
+    "position": "Wearer of many hats"
+  },
+  {
+    "name": "Brian Whalley",
+    "position": "Content Master"
+  },
+  {
+    "name": "Annie Bourne",
+    "position": "Legal-fu"
+  },
+  {
+    "github": "davewasmer",
+    "name": "Dave Wasmer",
+    "position": "Nodetacular"
+  }
+]

@@ -1,12 +1,8 @@
 {
-  "name": "js-sample-app",
+  "name": "applicant-tracker",
   "version": "0.1.0",
-  "description": "ERROR: No README.md file found!",
-  "main": "main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": "",
+  "description": "A sample application that you with a working example of a Backbone app using the Kinvey Backbone client library, including relational data, user login, and external APIs",
+  "private": true,
   "author": "Dave Wasmer",
   "license": "MIT",
   "devDependencies": {

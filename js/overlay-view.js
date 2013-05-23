@@ -1,12 +1,9 @@
 define(['jquery', 'vendor/backbone', 'app'], function ($, Backbone, App) {
   "use strict";
   /*
-   * LoginView
+   * OverlayView
    *
-   * Allows the user to login using their user credentials. Because
-   * this app contains sensitive data, we don't allow user registration
-   * through the app itself - users must be setup previously by the
-   * administrator using the Kinvey management console.
+   * Shows a loading overlay - used for UI feedback when the network is a bit slow.
    */
   
 

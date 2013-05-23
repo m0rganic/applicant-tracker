@@ -3,7 +3,8 @@ define(['Kinvey', 'app'], function (Kinvey, App) {
   /*
    * NotesCollection
    * 
-   * A Backbone Collection that represents a collection of Github repos
+   * A Backbone Collection that represents a collection 
+   * of notes about an applicant
    */
 
 

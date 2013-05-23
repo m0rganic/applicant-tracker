@@ -26,21 +26,24 @@ define([
         type          : Backbone.One,
         key           : 'github_profile',
         relatedModel  : GithubProfileModel,
-        exclude       : true  // in this case, we don't want to try saving the github profile if the applicant changes
+        autoFetch     : false,
+        autoSave      : false
       },
       {
         type            : Backbone.Many,
         key             : 'repos',
         relatedModel    : GithubRepoModel,
         collectionType  : GithubReposCollection,
-        exclude         : true
+        autoFetch     : false,
+        autoSave      : false
       },
       {
         type            : Backbone.Many,
         key             : 'notes',
         relatedModel    : NoteModel,
         collectionType  : NotesCollection,
-        exclude         : false // we want to save notes to Kinvey any time the applicant is saved
+        autoFetch       : true, // we want to retrieve related notes with every applicant
+        autoSave        : true // we want to save notes to Kinvey any time the applicant is saved
       }
     ]
 

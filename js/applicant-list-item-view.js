@@ -24,10 +24,7 @@ define(['vendor/backbone', 'app'], function (Backbone, App) {
     },
 
     showDetails: function (e) {
-      if (!App.detail) {
-        App.router.navigate("/applicants/" + this.model.id, {trigger: true});
-        e.stopPropagation();
-      }
+      App.router.navigate("/applicants/" + this.model.id, {trigger: true});
     }
 
   });

@@ -15,7 +15,10 @@ requirejs.config({
       "http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
       "vendor/jquery"
     ],
-    'Kinvey': 'vendor/kinvey'
+    'Kinvey': [
+      'http://da189i1jfloii.cloudfront.net/js/kinvey-backbone-1.0.0-beta',
+      'vendor/kinvey'
+    ]
   }
 });
 
@@ -56,18 +59,25 @@ require([
   Kinvey.init({
     appKey: "kid_VPw-HIphLf",
     appSecret: "b5bf32a8061c40bab22f90c0d37f48c2"
+  })
+  .then(function (activeUser) {
+    // the Kinvey.init function returns a promise which resolves to the active user
+    // data (or null if there is no active user). Note: when logged in, activeUser 
+    // here is *not* an instance of Kinvey.Backbone.User, but just the attributes of
+    // the user. You must instantiate the User yourself (to allow for custom subclasses). 
+    App.user = new Kinvey.Backbone.User(activeUser);
+
+    /*
+     * Backbone init
+     * 
+     * Create an instance of our router to use for calling `navigate`, and kick everything off by
+     * by starting the Backbone history. We hold off on this until the active user state is resolved
+     * so we know whether the user is logged in or not.
+     */
+
+    App.router = new AppRouter();
+    Backbone.history.start();
+
   });
-  
-
-
-  /*
-   * Backbone init
-   * 
-   * Create an instance of our router to use for calling `navigate`, and kick everything off by
-   * by starting the Backbone history.
-   */
-
-  App.router = new AppRouter();
-  Backbone.history.start();
 
 });

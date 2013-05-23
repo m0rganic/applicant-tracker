@@ -1,6 +1,7 @@
 define([
   'jquery',
   'vendor/backbone',
+  'Kinvey',
   'app',
   'applicant-list-view',
   'applicants-collection',
@@ -8,7 +9,7 @@ define([
   'applicant-detail-view',
   'applicant-model',
   'overlay-view'
-], function ($, Backbone, App, ApplicantListView, ApplicantsCollection, LoginView, ApplicantDetailView, ApplicantModel, OverlayView) {
+], function ($, Backbone, Kinvey, App, ApplicantListView, ApplicantsCollection, LoginView, ApplicantDetailView, ApplicantModel, OverlayView) {
   
   /*
    * AppRouter
@@ -27,12 +28,29 @@ define([
 
 
 
+  // Ensures that the user is logged in before proceeding with the
+  // `originalRoute`.
+  var ensureLogin = function(originalRoute) {
+    return function () {
+      if (App.user && App.user.isLoggedIn()) {
+        originalRoute.apply(this, arguments);
+      } else {
+        // Make sure we aren't already showing the login view
+        if (!(App.main instanceof LoginView)) {
+          App.main = new LoginView({complete: originalRoute});
+          $("#main").html(App.main.render().el);
+        }
+      }
+    };
+  };
+
+
+
    
   return Backbone.Router.extend({
 
     routes: {
       ""               : "applicantsList",
-      "login"          : "login",
       "applicants/:id"  : "applicantDetail"
     },
 
@@ -41,13 +59,13 @@ define([
      * Creates the applicants collection, fetches the data needed,
      * and instantiates a new ApplicantsListView with that data
      */
-    applicantsList: function () {
+    applicantsList: ensureLogin(function () {
 
       // If the user views an applicant and then hits back, we will
-      // already have the list populated and ready, so fetch in the
+      // already have the list populated and ready, so re-fetch in the
       // background, but show what's in the DOM immediately
       if (App.main instanceof ApplicantListView) {
-        
+
         App.detail.remove();
         App.applicants.fetch();
 
@@ -67,8 +85,8 @@ define([
         // fast enough.
         overlayTimeout = setTimeout(function () {
           overlay = new OverlayView({
-            title: 'Loading ...',
-            icon: 'loading'
+            title: 'loading ...',
+            loading: true
           });
         }, 200);
 
@@ -113,7 +131,7 @@ define([
           }
         }); 
       }
-    },
+    }),
 
 
     /*
@@ -129,7 +147,7 @@ define([
      * Takes the id of an applicant, fetches that record, and passes it
      * off to the newly created ApplicantDetailView for display
      */
-    applicantDetail: function (id) {
+    applicantDetail: ensureLogin(function (id) {
       var render, applicant, overlay, overlayTimeout;
 
       // If `App.applicants` is not defined, it means the user directly
@@ -155,8 +173,8 @@ define([
       // route handler for a more detailed explanation
       overlayTimeout = setTimeout(function () {
         overlay = new OverlayView({
-          title: 'Loading ...',
-          icon: 'loading'
+          title: 'loading ...',
+          loading: true
         });
       }, 200);
 
@@ -189,7 +207,7 @@ define([
           alert("Unable to retrieve applicant details");
         }
       });
-    }
+    })
 
   });
 });
