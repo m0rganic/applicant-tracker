@@ -57,8 +57,8 @@ require([
 
   window.KINVEY_DEBUG = true;
   Kinvey.init({
-    appKey: "kid_VPw-HIphLf",
-    appSecret: "b5bf32a8061c40bab22f90c0d37f48c2"
+    appKey: "Paste your app key here",
+    appSecret: "... and app secret here. Remember, *never* use the master secret in a client-facing application!"
   })
   .then(function (activeUser) {
     // the Kinvey.init function returns a promise which resolves to the active user
