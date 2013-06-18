@@ -101,6 +101,17 @@ module.exports = function(grunt) {
           'dist/styles.css': 'less/manifest.less'
         }
       }
+    },
+    // make a zipfile
+    compress: {
+      main: {
+        options: {
+          archive: 'applicant_tracker.zip'
+        },
+        files: [
+          {cwd: 'dist/', src: ['**']}
+        ]
+      }
     }
   });
 
@@ -112,8 +123,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-include-bootstrap');
+  grunt.loadNpmTasks('grunt-contrib-compress');
 
   // Default task.
-  grunt.registerTask('default', ['clean', 'jshint', 'copy', 'include_bootstrap', 'connect', 'watch']);
+  grunt.registerTask('default', ['clean', 'jshint', 'copy', 'include_bootstrap', 'connect', 'compress', 'watch']);
 
 };
