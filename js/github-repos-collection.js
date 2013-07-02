@@ -1,8 +1,8 @@
-define(['Kinvey', 'app'], function (Kinvey, App) {
+define(['kinvey', 'app'], function (Kinvey, App) {
   "use strict";
   /*
    * GithubReposCollection
-   * 
+   *
    * A Backbone Collection that represents a collection of Github repos
    */
 

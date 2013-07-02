@@ -1,8 +1,8 @@
-define(['Kinvey', 'app'], function (Kinvey, App) {
+define(['kinvey', 'app'], function (Kinvey, App) {
   "use strict";
   /*
    * GithubProfileModel
-   * 
+   *
    * A Backbone Model that represents a person's Github profile
    */
 

@@ -1,9 +1,9 @@
-define(['Kinvey', 'app'], function (Kinvey, App) {
+define(['kinvey', 'app'], function (Kinvey, App) {
   "use strict";
   /*
    * NotesCollection
-   * 
-   * A Backbone Collection that represents a collection 
+   *
+   * A Backbone Collection that represents a collection
    * of notes about an applicant
    */
 

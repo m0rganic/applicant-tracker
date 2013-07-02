@@ -1,4 +1,4 @@
-define(['vendor/backbone', 'Kinvey', 'app'], function (Backbone, Kinvey, App) {
+define(['vendor/backbone', 'kinvey', 'app'], function (Backbone, Kinvey, App) {
   "use strict";
   /*
    * LoginView
@@ -10,7 +10,7 @@ define(['vendor/backbone', 'Kinvey', 'app'], function (Backbone, Kinvey, App) {
    * by setting the user permissions to "Read Only" using the Kinvey
    * web console (under Addons -> Users -> Settings -> Permissions).
    */
-  
+
 
 
   return Backbone.View.extend({

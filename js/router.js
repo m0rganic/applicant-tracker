@@ -1,7 +1,7 @@
 define([
   'jquery',
   'vendor/backbone',
-  'Kinvey',
+  'kinvey',
   'app',
   'applicant-list-view',
   'applicants-collection',
@@ -10,7 +10,7 @@ define([
   'applicant-model',
   'overlay-view'
 ], function ($, Backbone, Kinvey, App, ApplicantListView, ApplicantsCollection, LoginView, ApplicantDetailView, ApplicantModel, OverlayView) {
-  
+
   /*
    * AppRouter
    *
@@ -46,7 +46,7 @@ define([
 
 
 
-   
+
   return Backbone.Router.extend({
 
     routes: {
@@ -101,7 +101,7 @@ define([
             if (overlay) {
               overlay.remove();
             // `overlay` isn't defined, which means the request completed in less
-            // than the overlayTimeout length. Clear the timeout to make sure 
+            // than the overlayTimeout length. Clear the timeout to make sure
             // we don't show the overlay after everything is done!
             } else {
               clearTimeout(overlayTimeout);
@@ -129,7 +129,7 @@ define([
             // Ideally there would be some better error handling than an alert :)
             alert('Unable to retrieve applicant list');
           }
-        }); 
+        });
       }
     }),
 
@@ -154,7 +154,7 @@ define([
       // loaded (or refreshed) this URL. So run the `applicantsList` route
       // first to build the list in the background. Even though it makes
       // async data requests, we don't need the data to render this view
-      // now (we just want the list to exist in the background), so we 
+      // now (we just want the list to exist in the background), so we
       // continue on immediately.
       if (!App.applicants) {
         this.applicantsList();

@@ -1,8 +1,8 @@
-define(['Kinvey', 'app'], function (Kinvey, App) {
+define(['kinvey', 'app'], function (Kinvey, App) {
   "use strict";
   /*
    * NoteModel
-   * 
+   *
    * A Backbone Model that represents a single note
    * about an applicant
    */

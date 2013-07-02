@@ -1,6 +1,6 @@
 define([
-  'vendor/backbone', 
-  'Kinvey', 
+  'vendor/backbone',
+  'kinvey',
   'app',
   'github-profile-model',
   'github-repo-model',
@@ -11,7 +11,7 @@ define([
   "use strict";
   /*
    * ApplicantModel
-   * 
+   *
    * A Backbone Model that represents a single job application (a person, and the
    * position they are applying for).
    */
