@@ -1,3 +1,18 @@
+/**
+ * Copyright 2013 Kinvey, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 define([
   'jquery',
   'vendor/underscore',
@@ -11,7 +26,7 @@ define([
    *
    * Displays the details for a single Applicant in a "slide-over" screen.
    */
-  
+
 
 
   return Backbone.View.extend({
@@ -30,7 +45,7 @@ define([
     },
 
     // This `show` function is needed to handle the CSS animations to slide
-    // this screen in. Fires the supplied callback once the animations to 
+    // this screen in. Fires the supplied callback once the animations to
     // show this screen have finished.
     show: function (cb) {
       var _this = this;
@@ -62,7 +77,7 @@ define([
       }, 0);
     },
 
-    // Override the remove function to make sure we run the 
+    // Override the remove function to make sure we run the
     // closing animations before killing this view.
     remove: function () {
       var _this = this;
